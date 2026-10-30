@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#150c2b">
+<title>Trick or Treat Night</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg1:#120a26; --bg2:#2a1450; --panel:#2b1a52; --panel2:#3a2370;
+  --orange:#ff8a1f; --orange2:#ffb347; --mint:#a8f0d8; --rose:#ff7eb6; --ink:#fff4e0; --muted:#c9b8ee;
+  --good:#3ccf8e; --bad:#9acd32; --r:20px;
+  --font-h:'Baloo 2','Nunito',ui-rounded,system-ui,sans-serif;
+  --font-b:'Nunito','Baloo 2',ui-rounded,system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;height:100%;background:var(--bg1)}
+body{
+  color:var(--ink);font-family:var(--font-b);font-weight:600;
+  background:radial-gradient(ellipse at 80% 0%,#4a2a8a55 0,transparent 55%),radial-gradient(ellipse at 10% 100%,#ff8a1f22 0,transparent 50%),linear-gradient(180deg,var(--bg2),var(--bg1));
+  overflow-x:hidden;touch-action:manipulation;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;
+  font-size:clamp(15px,1.4vmin + 11px,20px);
+}
+input{-webkit-user-select:text;user-select:text}
+button{font:inherit;color:inherit;cursor:pointer;border:0}
+h1,h2,h3{font-family:var(--font-h);margin:0;line-height:1.1}
+
+/* ---------- decor ---------- */
+#decor{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.moon{position:absolute;top:6vh;right:8vw;width:clamp(70px,14vmin,140px);aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#fffbe6,#ffe9a8 60%,#f3cf74);box-shadow:0 0 60px 20px #ffe9a844;opacity:.9}
+.moon::after{content:"";position:absolute;left:55%;top:25%;width:22%;aspect-ratio:1;border-radius:50%;background:#e8c867;opacity:.35;box-shadow:-30% 90% 0 -2px #e8c867}
+.fly{position:absolute;left:-12vw;font-size:clamp(22px,4vmin,40px);opacity:.55;will-change:transform;animation:fly linear infinite}
+@keyframes fly{from{transform:translate3d(0,0,0)}50%{transform:translate3d(60vw,-4vh,0) rotate(6deg)}to{transform:translate3d(120vw,2vh,0)}}
+.candle{position:absolute;bottom:calc(env(safe-area-inset-bottom) + 6px);font-size:clamp(22px,4vmin,38px);animation:flick 2.4s ease-in-out infinite;filter:drop-shadow(0 0 12px #ffb347)}
+@keyframes flick{0%,100%{opacity:.95;filter:drop-shadow(0 0 10px #ffb347)}40%{opacity:.7;filter:drop-shadow(0 0 18px #ffb347)}70%{opacity:1}}
+
+/* ---------- shell ---------- */
+#root{position:relative;z-index:2;height:100vh;height:100dvh;display:flex;flex-direction:column;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.top{display:flex;align-items:center;gap:8px;padding:8px 12px;flex-wrap:wrap}
+.brand{font-family:var(--font-h);font-weight:800;font-size:clamp(1.1rem,2.4vmin + .6rem,1.7rem);color:var(--orange2);margin-right:auto;white-space:nowrap}
+.iconbtn{min-width:48px;min-height:48px;border-radius:16px;background:#ffffff14;font-size:1.3rem;display:inline-flex;align-items:center;justify-content:center;padding:0 12px}
+.iconbtn:active{transform:scale(.95)}
+.iconbtn.txt{font-size:1rem;font-weight:800}
+.layout{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr)}
+main{min-height:0;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;padding:8px clamp(10px,3vw,28px) 56px;-webkit-overflow-scrolling:touch}
+main>*{margin-block:auto}
+.board{display:none}
+
+/* wide screens: fixed board */
+@media (min-width:900px) and (min-height:560px){
+  .layout.hasboard{grid-template-columns:minmax(0,1fr) clamp(250px,27vw,350px)}
+  .layout.hasboard .board{display:flex}
+  .only-narrow{display:none!important}
+}
+/* narrow: drawer */
+@media not all and (min-width:900px) and (min-height:560px){
+  .layout.hasboard .board{display:flex;position:fixed;z-index:30;top:0;bottom:0;right:0;width:min(88vw,340px);transform:translateX(105%);transition:transform .25s;
+    padding-top:calc(env(safe-area-inset-top) + 12px);padding-right:env(safe-area-inset-right);box-shadow:-10px 0 40px #000a}
+  .layout.hasboard .board.open{transform:none}
+}
+.board{flex-direction:column;background:#1b0f38cc;backdrop-filter:blur(6px);border-left:2px solid #ffffff12;padding:14px;gap:10px;min-height:0}
+.board h3{font-size:1.3rem;color:var(--orange2);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.board ol{list-style:none;margin:0;padding:0;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:6px}
+.board li{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:14px;background:#ffffff0f;min-height:48px}
+.board li.active{background:#ff8a1f33;outline:2px solid var(--orange)}
+.board .rk{width:1.4em;text-align:center;color:var(--muted);font-weight:800}
+.board .av{font-size:1.6rem}
+.board .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:800}
+.board .sc{font-family:var(--font-h);font-weight:800;color:var(--bad);white-space:nowrap}
+.scrim{position:fixed;inset:0;z-index:25;background:#0008}
+
+/* ---------- buttons ---------- */
+.btn{min-height:52px;padding:10px 22px;border-radius:999px;font-family:var(--font-h);font-weight:700;font-size:clamp(1rem,1vmin + .8rem,1.3rem);
+  background:var(--panel2);box-shadow:0 4px 0 #0005;transition:transform .08s;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-align:center}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #0005}
+.btn.big{background:linear-gradient(180deg,var(--orange2),var(--orange));color:#2b1200;font-size:clamp(1.2rem,1.4vmin + 1rem,1.7rem);min-height:60px;padding-inline:34px}
+.btn.good{background:linear-gradient(180deg,#5be3a8,var(--good));color:#06311e}
+.btn.bad{background:linear-gradient(180deg,#c6ef6a,var(--bad));color:#243300}
+.btn.ghost{background:#ffffff14;box-shadow:none}
+.btn.danger{background:#ff5d73;color:#2c0008}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+
+/* ---------- screens ---------- */
+.panel{width:min(100%,620px);margin-inline:auto;display:flex;flex-direction:column;gap:14px}
+.logo{font-size:clamp(2rem,5vmin + 1rem,3.6rem);text-align:center;color:var(--orange2);text-shadow:0 0 24px #ff8a1f77;font-weight:800}
+.sub{text-align:center;color:var(--muted);margin:0}
+.prow{display:flex;gap:8px;align-items:center}
+.avbtn{min-width:56px;min-height:56px;font-size:1.8rem;border-radius:18px;background:var(--panel2)}
+.pname{flex:1;min-width:0;min-height:56px;border-radius:18px;border:2px solid #ffffff22;background:#ffffff10;color:var(--ink);padding:0 14px;font:inherit;font-weight:800;font-size:1.1rem}
+.pname:focus,.field:focus{outline:3px solid var(--orange);border-color:transparent}
+.stage{width:100%;display:flex;flex-direction:column;align-items:center;gap:clamp(10px,2.5vmin,24px);text-align:center}
+.stage h2{font-size:clamp(1.4rem,3.4vmin + .8rem,2.6rem)}
+.spinner{display:flex;flex-wrap:wrap;gap:clamp(6px,1.4vmin,14px);justify-content:center;max-width:900px}
+.chip{width:clamp(72px,17vmin,120px);padding:8px 4px;border-radius:20px;background:#ffffff10;display:flex;flex-direction:column;align-items:center;gap:2px;transition:transform .1s,background .1s}
+.chip .a{font-size:clamp(2rem,7vmin,3.6rem);line-height:1.1}
+.chip .n{font-size:.8rem;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 4px;font-weight:800}
+.chip.on{background:var(--orange);color:#2b1200;transform:scale(1.14);box-shadow:0 0 28px #ff8a1fbb}
+.turn{font-family:var(--font-h);font-weight:800;font-size:clamp(2rem,7vmin + .6rem,4.6rem);line-height:1.05;color:var(--orange2);text-shadow:0 0 30px #ff8a1f88;word-break:break-word;animation:pop .5s}
+.turn .big{display:block;font-size:1.4em;animation:bob 1.4s ease-in-out infinite}
+@keyframes pop{from{transform:scale(.4);opacity:0}70%{transform:scale(1.08)}to{transform:none;opacity:1}}
+@keyframes bob{50%{transform:translateY(-8px)}}
+
+.pumpkins{display:flex;gap:clamp(8px,3vmin,32px);justify-content:center;flex-wrap:wrap}
+.pk{perspective:800px;width:clamp(96px,26vmin,200px);aspect-ratio:1;background:none;padding:0;transition:opacity .4s,transform .4s;animation:bob 2.6s ease-in-out infinite}
+.pk:nth-child(2){animation-delay:-.9s}.pk:nth-child(3){animation-delay:-1.8s}
+.pk-in{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .7s}
+.pk.flipped{animation:none}.pk.flipped .pk-in{transform:rotateY(180deg)}
+.pk.dim{opacity:.15;transform:scale(.8)}
+.face{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:24px}
+.face.front{font-size:clamp(4.4rem,15vmin,9rem);filter:drop-shadow(0 0 18px #ff8a1f88)}
+.face.back{transform:rotateY(180deg);font-size:clamp(3rem,10vmin,6rem);background:var(--panel2);font-family:var(--font-h);font-weight:800}
+.face.back small{font-size:.22em}
+
+.cardwrap{width:min(100%,680px);margin-inline:auto;display:flex;flex-direction:column;align-items:center;gap:clamp(8px,1.8vmin,16px)}
+.who{font-family:var(--font-h);font-weight:800;font-size:clamp(1.2rem,2.4vmin + .8rem,2rem);color:var(--orange2)}
+.tcard{width:100%;min-height:clamp(210px,38dvh,400px);max-height:56dvh;border-radius:28px;padding:clamp(14px,3vmin,30px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;
+  overflow-y:auto;box-shadow:0 12px 40px #0008,inset 0 0 0 4px #ffffff2a;animation:cardflip .7s both;transform-origin:center}
+@keyframes cardflip{from{transform:perspective(900px) rotateY(100deg) scale(.7);opacity:0}to{transform:perspective(900px) rotateY(0) scale(1);opacity:1}}
+.type-treat{background:linear-gradient(160deg,#ff9a3c,#e8553a);color:#fff}
+.type-trick{background:linear-gradient(160deg,#6b3fc4,#3b1f80);color:#fff}
+.type-secret{background:linear-gradient(160deg,#2c8f86,#1a5e7a);color:#fff}
+.tbadge{font-family:var(--font-h);font-weight:800;font-size:clamp(1.3rem,2.6vmin + .8rem,2.2rem)}
+.tsub{opacity:.85;font-size:.95rem;margin-top:-6px}
+.ttext{margin:0;font-family:var(--font-h);font-weight:700;font-size:clamp(1.15rem,1vmin + 1rem,2.1rem);line-height:1.3;text-wrap:balance;overflow-wrap:anywhere}
+.timer{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center}
+.timer .t{font-family:var(--font-h);font-weight:800;font-size:clamp(1.8rem,5vmin,3rem);font-variant-numeric:tabular-nums}
+.timer .t.warn{color:#ffe066;animation:bob .5s infinite}
+.judge{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:100%}
+.judge .btn{flex:1 1 200px}
+
+.sum h2{text-align:center}
+.award{border-radius:24px;padding:16px;text-align:center;display:flex;flex-direction:column;gap:6px}
+.award.king{background:linear-gradient(160deg,#7a4a10,#c47a12);box-shadow:0 0 30px #ff8a1f55}
+.award.clean{background:linear-gradient(160deg,#1c6a58,#2a8f7a)}
+.award h3{font-size:clamp(1.3rem,2.4vmin + .8rem,2rem)}
+.pl{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;font-family:var(--font-h);font-weight:800;font-size:1.3rem}
+.pl span{background:#0003;padding:4px 14px;border-radius:999px}
+.rank{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.rank li{display:flex;gap:10px;align-items:center;background:#ffffff10;border-radius:14px;padding:10px 12px;min-height:48px}
+.rank .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:800}
+
+/* ---------- modal / fx ---------- */
+.mback{position:fixed;inset:0;z-index:60;background:#000b;display:flex;align-items:center;justify-content:center;padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+.modal{width:min(100%,560px);max-height:100%;overflow-y:auto;background:var(--panel);border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 60px #000c;border:2px solid #ffffff1a}
+.modal h2{font-size:1.5rem;color:var(--orange2)}
+.field{width:100%;min-height:52px;border-radius:14px;border:2px solid #ffffff22;background:#ffffff10;color:var(--ink);padding:10px 12px;font:inherit;font-weight:700}
+.avgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.avgrid button{min-height:64px;font-size:2rem;border-radius:18px;background:var(--panel2)}
+.clist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.clist li{display:flex;gap:8px;align-items:center;background:#ffffff10;border-radius:12px;padding:6px 6px 6px 12px}
+.clist li span{flex:1;min-width:0;overflow-wrap:anywhere}
+.small{font-size:.9rem;color:var(--muted)}
+#fx{position:fixed;inset:0;z-index:50;pointer-events:none;overflow:hidden}
+.ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:#6b8e2388;animation:ovf 1.6s both;text-align:center;padding:20px}
+.ov .e{font-size:clamp(6rem,30vmin,16rem);animation:wob .35s infinite alternate}
+.ov .t{font-family:var(--font-h);font-weight:800;font-size:clamp(1.6rem,5vmin,3rem);text-shadow:0 3px 0 #0006}
+@keyframes ovf{0%{opacity:0}12%,80%{opacity:1}100%{opacity:0}}
+@keyframes wob{from{transform:rotate(-10deg) scale(1)}to{transform:rotate(10deg) scale(1.1)}}
+.spark{position:absolute;bottom:30%;left:50%;font-size:clamp(1.6rem,5vmin,3rem);animation:rise 1s ease-out both}
+@keyframes rise{to{transform:translate(var(--dx),-45vh) rotate(var(--rot));opacity:0}}
+.shake{animation:shk .5s}
+@keyframes shk{10%,90%{transform:translateX(-4px)}20%,80%{transform:translateX(8px)}30%,50%,70%{transform:translateX(-14px)}40%,60%{transform:translateX(14px)}}
+#toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 70px);transform:translateX(-50%);z-index:70;background:#000c;color:#fff;padding:12px 20px;border-radius:999px;max-width:90vw;text-align:center}
+
+/* short landscape (phones) */
+@media (max-height:480px){
+  .top{padding:4px 10px}.iconbtn{min-height:48px}
+  .tcard{min-height:0;max-height:none;padding:12px}
+  .stage{gap:8px}
+  .cardwrap{gap:8px}
+  .judge .btn{flex:1 1 150px}
+}
+@media (max-width:520px){.brand{display:none}.top{justify-content:flex-end}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  #decor .fly,.candle{display:none}
+}
+</style>
+</head>
+<body>
+<div id="decor" aria-hidden="true">
+  <div class="moon"></div>
+  <span class="fly" style="top:10vh;animation-duration:26s">🦇</span>
+  <span class="fly" style="top:30vh;animation-duration:34s;animation-delay:-12s">👻</span>
+  <span class="fly" style="top:52vh;animation-duration:30s;animation-delay:-20s">🦇</span>
+  <span class="fly" style="top:70vh;animation-duration:40s;animation-delay:-5s">👻</span>
+  <span class="candle" style="left:4vw">🕯️</span>
+  <span class="candle" style="left:48vw;animation-delay:-1s">🕯️</span>
+  <span class="candle" style="right:5vw;animation-delay:-.5s">🕯️</span>
+</div>
+
+<div id="root">
+  <header class="top">
+    <div class="brand">🎃 Trick or Treat Night</div>
+    <button class="iconbtn only-narrow" id="btnBoard" data-act="board" aria-label="Bảng kẹo thúi" hidden>🏆</button>
+    <button class="iconbtn" data-act="settings" aria-label="Cài đặt">⚙️</button>
+    <button class="iconbtn" id="btnSound" data-act="sound" aria-label="Bật/tắt âm thanh">🔊</button>
+    <button class="iconbtn" id="btnFs" data-act="fs" aria-label="Toàn màn hình" hidden>⛶</button>
+    <button class="iconbtn txt" id="btnEnd" data-act="end" hidden>🏁 Kết thúc</button>
+  </header>
+  <div class="layout" id="layout">
+    <main id="app"></main>
+    <aside class="board" id="board"></aside>
+  </div>
+</div>
+<div class="scrim" id="scrim" hidden data-act="board"></div>
+<div id="fx"></div>
+<div id="modal" class="mback" hidden></div>
+<div id="toast" hidden></div>
+
+<script>
+/* ================= NGÂN HÀNG THẺ (dễ sửa) =================
+   Mỗi thẻ là một chuỗi, hoặc ["nội dung", số giây] nếu có đồng hồ đếm ngược. */
+const CARDS = {
+  treat: [
+    "Người ngồi bên trái phải khen bạn một câu thật lòng.",
+    "Chọn một người để đập tay thật kêu với bạn.",
+    "Cả nhóm vỗ tay và hô tên bạn ba lần thật to.",
+    "Bạn được chỉ định một người kể một điều họ thích ở bạn.",
+    "Chọn một câu hát, cả nhóm hát cùng bạn câu đó.",
+    "Bạn được nhờ một người rót nước hoặc đút đồ ăn vặt giúp một lần.",
+    "Cả nhóm bình chọn xem bạn giống con vật Halloween nào nhất (dơi, mèo đen, ma, nhện…) và giải thích vì sao.",
+    "Người bên phải chúc bạn may mắn bằng giọng của một ngôi sao nổi tiếng.",
+    "Cả nhóm cùng nói “Bạn thật tuyệt!” theo kiểu bạn chọn (giọng ma, robot, opera…).",
+    "Chọn một bạn để cùng tạo dáng “cặp đôi ma quái” thật ngầu trong 5 giây.",
+    "Người ngồi đối diện kể một kỷ niệm vui có bạn trong đó.",
+    "Bạn được đặt cho mình một biệt danh Halloween thật ngầu, cả nhóm gọi bạn bằng tên đó trong vài phút tới.",
+    "Bạn được ra lệnh cho một người làm một điệu bộ dễ thương (nháy mắt, vẫy tay như mèo…).",
+    "Cả nhóm cùng đoán món ăn vặt yêu thích của bạn.",
+    "Bạn chọn một giai điệu, cả nhóm cùng ngân nga 10 giây.",
+    "Người bên phải phải nói ra một điều bạn làm rất giỏi.",
+    "Bạn là Phù thủy tốt bụng: “phù phép” một người thành con vật dễ thương trong 10 giây, họ phải kêu theo.",
+    "Mỗi người chúc bạn một điều ước thật ngắn (tối đa 5 từ).",
+    "Người ngồi cạnh bạn nói lời cảm ơn thật lòng về một điều bạn từng làm.",
+    "Bạn được hỏi cả nhóm một câu hỏi vui, ai cũng phải trả lời.",
+    "Cả nhóm giơ ngón cái và hô “Chất lắm!” kèm hiệu ứng âm thanh bạn chọn.",
+    "Bạn chọn người vui nhất đêm nay, người đó phải đứng dậy cúi chào.",
+    "Người bên trái kể một điều khiến họ bật cười hôm nay.",
+    "Cả nhóm cùng làm động tác “bay như dơi” 5 giây để chào mừng bạn.",
+    "Bạn nhận “vương miện bí ngô” tưởng tượng: một người đội lên đầu bạn thật trang trọng.",
+    "Theo vòng tròn, mỗi người nói một từ tích cực mô tả bạn."
+  ],
+  trick: [
+    ["Kể một câu chuyện ma trong 30 giây bằng giọng thì thầm.", 30],
+    "Làm tiếng kêu của ba con vật khác nhau mà không dùng từ nào.",
+    ["Nói “Trick or Treat!” bằng nhiều giọng khác nhau trong 20 giây.", 20],
+    "Đi như một con ma thân thiện quanh phòng một vòng.",
+    "Diễn tả một đồ vật Halloween bằng điệu bộ, cả nhóm đoán (không được nói).",
+    "Nói một câu chào bằng giọng phù thủy cười khúc khích.",
+    ["Hát một câu quen thuộc nhưng thay mọi từ bằng “bí ngô”.", 20],
+    ["Tạo dáng thành một bức tượng ma và giữ yên 10 giây.", 10],
+    ["Kể tên 5 loại kẹo hoặc bánh trong 10 giây.", 10],
+    ["Nhảy điệu “ma nhảy” thật bay bổng trong 15 giây.", 15],
+    "Bắt chước dáng đi hoặc giọng của một nhân vật hoạt hình, cả nhóm đoán là ai.",
+    "Nói câu “Hôm nay trời đẹp quá” lần lượt như ma cà rồng, robot và mèo.",
+    ["Kể liền 5 thứ màu cam trong 10 giây.", 10],
+    "Làm biểu cảm “ma bị giật mình” và để cả nhóm chấm điểm trên thang 10.",
+    "Vẽ trên không trung một con gì đó, cả nhóm đoán bạn đang vẽ gì.",
+    ["Đứng một chân và kể về bữa ăn gần nhất của bạn trong 20 giây.", 20],
+    "Đặt cho mỗi người trong phòng một biệt danh Halloween dễ thương.",
+    "Đọc nhanh “Bí ngô bé bỏng bò bên bờ bụi” ba lần liền không vấp.",
+    "Nói “chào buổi sáng” như thể bạn là con dơi vừa thức giấc.",
+    ["Làm người dẫn chương trình giới thiệu một con ma nổi tiếng trong 20 giây.", 20],
+    "Giới thiệu một món đồ trong phòng như thể nó là báu vật của lâu đài ma.",
+    ["Hoá thân thành mèo đen: đi, kêu và liếm tay trong 10 giây.", 10],
+    "Cười như phù thủy theo ba kiểu khác nhau.",
+    "Dùng đôi tay làm một con vật Halloween và cho nó “nói chuyện”.",
+    "Đọc một bài thơ hai câu tự chế về một vật trong phòng.",
+    ["Đếm ngược từ 10 về 1 bằng giọng ma rền rĩ.", 15],
+    "Đóng vai quả bí ngô biết nói: tự giới thiệu bản thân trong một câu.",
+    "Treo hai tay như cánh dơi và nói “chít chít” chào mọi người.",
+    "Đứng dậy và vẫy chào từng người bằng một kiểu chào khác nhau.",
+    "Bắt chước dáng đi hoặc giọng của một nhân vật hoạt hình, cả nhóm đoán là ai.",
+    "Nói câu “Hôm nay trời đẹp quá” lần lượt như ma cà rồng, robot và mèo.",
+    ["Kể liền 5 thứ màu cam trong 10 giây.", 10]
+  ],
+  secret: [
+    "Ấn tượng đầu tiên của bạn về một người trong phòng là gì?",
+    "Món ăn vặt nào bạn không bao giờ chán?",
+    "Điều bạn sợ nhất hồi nhỏ mà bây giờ thấy buồn cười?",
+    "Bộ phim hoặc phim hoạt hình bạn xem đi xem lại nhiều lần nhất?",
+    "Một thói quen nhỏ hơi lạ của bạn là gì?",
+    "Nếu hoá thân thành một sinh vật Halloween trong một đêm, bạn chọn gì và vì sao?",
+    "Điều gì khiến bạn cười nhiều nhất tuần này?",
+    "Bài hát nào bạn hay hát một mình khi không ai nghe?",
+    "Món quà đáng nhớ nhất bạn từng nhận là gì?",
+    "Nếu ngày mai được đi đâu đó, bạn muốn đến nơi nào?",
+    "Kỹ năng “vô dụng” nhưng bạn rất tự hào là gì?",
+    "Biệt danh hồi nhỏ của bạn là gì và từ đâu mà có?",
+    "Điều nhỏ xíu nào khiến một ngày của bạn tốt lên?",
+    "Kể về một lần bạn nhầm lẫn rất ngớ ngẩn.",
+    "Bạn thích mùa nào nhất và vì sao?",
+    "Trang phục Halloween đáng nhớ nhất bạn từng mặc (hoặc muốn mặc) là gì?",
+    "Điều bạn học được gần đây khiến bạn thấy thú vị?",
+    "Nếu có một siêu năng lực nhỏ xíu (như làm kẹo xuất hiện), bạn chọn gì?",
+    "Một điều về bạn mà ít người biết nhưng bạn không ngại kể?",
+    "Điều bạn trân trọng nhất ở nhóm bạn này?",
+    "Kể một kỷ niệm vui với một người trong phòng.",
+    "Điều bạn mong chờ nhất trong tháng tới?",
+    "Nghề mơ ước hồi bé của bạn là gì?",
+    "Con vật nào bạn thấy giống mình nhất?",
+    "Câu cửa miệng bạn hay nói là gì?",
+    "Truyền thuyết hoặc chuyện ma nhẹ nhàng nào bạn nhớ nhất?",
+    "Một điều bạn muốn thử ít nhất một lần trong đời?",
+    "Cuốn sách, bài hát hoặc trò chơi nào bạn muốn giới thiệu cho mọi người?",
+    "Kể về một lần bạn được ai đó giúp đỡ mà vẫn nhớ ơn.",
+    "Điều gì khiến bạn thấy bình yên?",
+    "Nếu nhóm là đội săn ma, vai trò của bạn là gì?",
+    "Ai trong nhóm có ấn tượng đầu tiên khác xa nhất so với hiện tại?",
+    "Bạn từng stalk ai trên mạng xã hội gần đây nhất là ai?",
+    "Điều trẻ con nhất bạn vẫn làm đến bây giờ là gì?",
+    "Nếu phải đi du lịch 3 ngày với một người trong nhóm, bạn sẽ chọn ai?",
+    "Bạn từng nói dối một chuyện nhỏ nào để tránh một cuộc hẹn?",
+    "Ai trong nhóm có khả năng trở thành người nổi tiếng nhất?",
+    "Bạn từng giả vờ hiểu chuyện gì dù thực ra chẳng hiểu gì?",
+    "Kể về một lần bạn cố tỏ ra cool nhưng thất bại.",
+    "Nếu phải xóa một ứng dụng khỏi điện thoại mãi mãi, bạn sẽ xóa ứng dụng nào?",
+    "Bạn từng có crush mà đến giờ nghĩ lại vẫn thấy hơi quê chưa?",
+    "Ai trong nhóm là người bạn muốn nhờ giữ bí mật nhất?",
+    "Bạn nghĩ mình có red flag nào?",
+    "Lần gần nhất bạn ghen tị với ai đó là khi nào?",
+    "Nếu mọi người được xem lịch sử tìm kiếm của bạn trong 5 phút, bạn lo nhất điều gì?",
+    "Chọn một người trong nhóm và nói một điều bạn muốn họ cải thiện.",
+    "Nếu phải đổi cuộc sống với một người trong nhóm trong 24 giờ, bạn sẽ chọn ai?",
+    "Bạn từng thích một người chỉ vì một lý do rất ngớ ngẩn chưa?",
+    "Điều gì bạn thường giả vờ không quan tâm nhưng thực ra rất để ý?",
+    "Kể một bí mật vô hại mà chưa ai trong nhóm biết.",
+    "Nếu phải mô tả bản thân bằng một red flag, đó sẽ là gì?"
+  ]
+};
+const TYPES = {
+  treat:  { icon: "🍬", name: "TREAT",         sub: "Nhận một điều dễ thương" },
+  trick:  { icon: "👻", name: "TRICK",         sub: "Thử thách nhẹ nhàng" },
+  secret: { icon: "💌", name: "LITTLE SECRET", sub: "Chia sẻ một chút" }
+};
+const AVATARS = ["🎃","👻","🦇","🧛","🧙‍♀️","🕷️","💀","🐈‍⬛"];
+const MAX_P = 12, MIN_P = 3;
+
+/* ================= TRẠNG THÁI ================= */
+const KEY = "tot_state_v1", CKEY = "tot_custom_v1";
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const rnd = n => Math.floor(Math.random() * n);
+const uid = () => Math.random().toString(36).slice(2, 9);
+const norm = x => Array.isArray(x) ? { t: x[0], s: x[1] || 0 } : { t: x, s: 0 };
+const IN_GAME = ["spin", "pick", "card"];
+
+function newPlayer(i) { return { id: uid(), name: "", av: AVATARS[i % AVATARS.length], stinky: 0, swap: false }; }
+function fresh(players) {
+  return { phase: "setup", players: players || [0,1,2].map(newPlayer), current: null, last: null, streak: 0, turn: 0,
+           used: { treat: [], trick: [], secret: [] }, card: null, sound: true };
+}
+function loadJSON(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+let S = (() => {
+  const s = loadJSON(KEY), f = fresh();
+  if (!s || !Array.isArray(s.players) || !s.players.length) return f;
+  const m = Object.assign(f, s);
+  m.used = Object.assign({ treat: [], trick: [], secret: [] }, s.used);
+  return m;
+})();
+let C = Object.assign({ treat: [], trick: [], secret: [] }, loadJSON(CKEY));
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+function saveC() { try { localStorage.setItem(CKEY, JSON.stringify(C)); } catch (e) {} }
+
+const cur = () => S.players.find(p => p.id === S.current);
+let lock = false, timers = [], tmr = null, pendingOk = null, avTarget = null;
+const later = (fn, ms) => { const h = setTimeout(fn, ms); timers.push(h); return h; };
+function clearTimers() { timers.forEach(clearTimeout); timers = []; clearInterval(tmr); }
+
+/* ================= ÂM THANH ================= */
+let ac = null;
+function A() {
+  try {
+    if (!ac) ac = new (window.AudioContext || window.webkitAudioContext)();
+    if (ac.state === "suspended") ac.resume();
+    return ac;
+  } catch (e) { return null; }
+}
+function tone(f, d, o = {}) {
+  if (!S.sound) return;
+  const c = A(); if (!c) return;
+  const t = c.currentTime + (o.at || 0), g = c.createGain(), os = c.createOscillator();
+  os.type = o.type || "sine";
+  os.frequency.setValueAtTime(f, t);
+  if (o.to) os.frequency.exponentialRampToValueAtTime(o.to, t + d);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(o.vol || 0.15, t + 0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+  os.connect(g).connect(c.destination);
+  if (o.wob) {
+    const l = c.createOscillator(), lg = c.createGain();
+    l.frequency.value = o.wob; lg.gain.value = f * 0.25;
+    l.connect(lg).connect(os.frequency); l.start(t); l.stop(t + d);
+  }
+  os.start(t); os.stop(t + d + 0.05);
+}
+const sfx = {
+  tick: n => tone(500 + (n % 8) * 40, 0.07, { type: "square", vol: 0.06 }),
+  flip: () => { tone(300, 0.18, { to: 900, type: "triangle" }); tone(900, 0.12, { at: 0.18, type: "sine", vol: 0.1 }); },
+  ew: () => { tone(220, 0.9, { to: 70, type: "sawtooth", vol: 0.14, wob: 14 }); tone(160, 0.8, { to: 55, type: "square", vol: 0.06, wob: 9, at: 0.1 }); },
+  cheer: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.18, { at: i * 0.08, type: "triangle", vol: 0.12 })),
+  land: () => { tone(392, 0.15, { type: "triangle" }); tone(587, 0.3, { at: 0.12, type: "triangle" }); },
+  alarm: () => [0, 0.25, 0.5].forEach(a => tone(880, 0.15, { at: a, type: "square", vol: 0.1 })),
+  beep: () => tone(660, 0.08, { type: "square", vol: 0.07 })
+};
+
+/* ================= BỐC THẺ / CHỌN NGƯỜI ================= */
+function pool(type) { return CARDS[type].map(norm).concat(C[type].map(t => ({ t, s: 0 }))); }
+function draw(type, avoid) {
+  const all = pool(type);
+  let av = all.filter(c => !S.used[type].includes(c.t));
+  if (!av.length) {                       // hết thẻ loại này → xáo lại
+    S.used[type] = [];
+    av = all.filter(c => c.t !== avoid);
+    if (!av.length) av = all;
+  }
+  const c = av[rnd(av.length)];
+  S.used[type].push(c.t);
+  return { type, t: c.t, s: c.s };
+}
+function choose() {
+  let list = S.players;
+  if (S.streak >= 2 && S.last) list = list.filter(p => p.id !== S.last);   // tối đa 2 lượt liên tiếp
+  const p = list[rnd(list.length)];
+  if (p.id === S.last) S.streak++; else { S.last = p.id; S.streak = 1; }
+  S.current = p.id; S.turn++;
+}
+function nextTurn() { choose(); S.phase = "spin"; S.card = null; save(); render(); }
+
+/* ================= HIỆU ỨNG ================= */
+function toast(msg) {
+  const t = $("#toast"); t.textContent = msg; t.hidden = false;
+  clearTimeout(toast.h); toast.h = setTimeout(() => t.hidden = true, 2200);
+}
+function overlay(emoji, text) {
+  const d = document.createElement("div"); d.className = "ov";
+  d.innerHTML = `<div class="e">${emoji}</div><div class="t">${esc(text)}</div>`;
+  $("#fx").appendChild(d); setTimeout(() => d.remove(), 1700);
+}
+function burst() {
+  const fx = $("#fx"), em = ["✨", "🍬", "⭐", "🎉", "🦇"];
+  for (let i = 0; i < 14; i++) {
+    const s = document.createElement("span"); s.className = "spark";
+    s.textContent = em[rnd(em.length)];
+    s.style.setProperty("--dx", (rnd(80) - 40) + "vw"); s.style.setProperty("--rot", (rnd(120) - 60) + "deg");
+    s.style.animationDelay = (rnd(200)) + "ms";
+    fx.appendChild(s); setTimeout(() => s.remove(), 1400);
+  }
+}
+function shake() { const r = $("#root"); r.classList.remove("shake"); void r.offsetWidth; r.classList.add("shake"); setTimeout(() => r.classList.remove("shake"), 600); }
+
+/* ================= RENDER ================= */
+function render() {
+  clearTimers(); lock = false;
+  const ph = S.phase, inGame = IN_GAME.includes(ph);
+  $("#layout").classList.toggle("hasboard", inGame);
+  $("#btnEnd").hidden = !inGame;
+  $("#btnBoard").hidden = !inGame;
+  closeBoard();
+  $("#btnSound").textContent = S.sound ? "🔊" : "🔇";
+  const app = $("#app");
+  if (ph === "setup") app.innerHTML = viewSetup();
+  else if (ph === "spin") { if (!cur()) { choose(); save(); } app.innerHTML = viewSpin(); runSpin(); }
+  else if (ph === "pick") app.innerHTML = viewPick();
+  else if (ph === "card") { if (!S.card) { S.phase = "pick"; return render(); } app.innerHTML = viewCard(); }
+  else if (ph === "summary") app.innerHTML = viewSummary();
+  app.scrollTop = 0;
+  renderBoard();
+}
+
+function viewSetup() {
+  const rows = S.players.map((p, i) => `
+    <div class="prow">
+      <button class="avbtn" data-act="avatar" data-pid="${p.id}" aria-label="Chọn avatar">${p.av}</button>
+      <input class="pname" data-pid="${p.id}" maxlength="16" placeholder="Người chơi ${i + 1}" value="${esc(p.name)}" autocomplete="off">
+      <button class="iconbtn" data-act="delp" data-pid="${p.id}" aria-label="Xoá người chơi">✕</button>
+    </div>`).join("");
+  return `<section class="panel">
+    <h1 class="logo">🎃 Trick or Treat Night</h1>
+    <p class="sub">Nhập tên ${MIN_P}–${MAX_P} người chơi và chọn avatar. Chơi chung trên một màn hình, truyền tay nhau nhé!</p>
+    <div style="display:flex;flex-direction:column;gap:8px">${rows}</div>
+    <div class="row">
+      <button class="btn ghost" data-act="addp" ${S.players.length >= MAX_P ? "disabled" : ""}>➕ Thêm người chơi</button>
+      <button class="btn ghost" data-act="settings">✍️ Thẻ tự viết</button>
+    </div>
+    <div class="row"><button class="btn big" data-act="start">🍬 Bắt đầu chơi</button></div>
+  </section>`;
+}
+function viewSpin() {
+  const chips = S.players.map(p => `<div class="chip"><div class="a">${p.av}</div><div class="n">${esc(p.name)}</div></div>`).join("");
+  return `<div class="stage"><h2 id="spinTitle">🔮 Đang chọn người may mắn…</h2><div class="spinner">${chips}</div><div id="banner" style="min-height:1em"></div></div>`;
+}
+function runSpin() {
+  const n = S.players.length, target = S.players.findIndex(p => p.id === S.current);
+  const els = [...document.querySelectorAll(".chip")];
+  let i = rnd(n), step = 0;
+  const total = (n <= 5 ? n * 3 : n * 2) + ((target - i + n) % n);
+  (function tick() {
+    els.forEach((e, k) => e.classList.toggle("on", k === i));
+    if (step >= total) return land();
+    sfx.tick(step); step++; i = (i + 1) % n;
+    later(tick, 60 + Math.pow(step / total, 3) * 380);
+  })();
+}
+function land() {
+  const p = cur(); sfx.land();
+  $("#spinTitle").textContent = "🎯";
+  $("#banner").innerHTML = `<div class="turn"><span class="big">${p.av}</span>Đến lượt ${esc(p.name)}!</div>`;
+  later(() => { S.phase = "pick"; save(); render(); }, 1700);
+}
+function viewPick() {
+  const p = cur();
+  const pk = [0, 1, 2].map(() => `<button class="pk" data-act="pumpkin" aria-label="Quả bí ngô úp"><div class="pk-in"><div class="face front">🎃</div><div class="face back"></div></div></button>`).join("");
+  return `<div class="stage"><div class="turn"><span class="big">${p.av}</span>Đến lượt ${esc(p.name)}!</div>
+    <p class="sub" style="font-size:1.2em">Chạm vào một quả bí ngô để lật thẻ 👇</p><div class="pumpkins">${pk}</div></div>`;
+}
+function pickPumpkin(el) {
+  if (lock) return; lock = true;
+  const type = Object.keys(TYPES)[rnd(3)];
+  S.card = draw(type); S.phase = "card"; save();
+  const T = TYPES[type];
+  el.querySelector(".back").innerHTML = `${T.icon}<small>${T.name}</small>`;
+  el.classList.add("flipped");
+  document.querySelectorAll(".pk").forEach(x => x !== el && x.classList.add("dim"));
+  sfx.flip();
+  later(render, 1000);
+}
+function viewCard() {
+  const p = cur(), c = S.card, T = TYPES[c.type];
+  const left = p.swap ? 0 : 1;
+  const timer = c.s ? `<div class="timer"><span class="t" id="tm">${fmt(c.s)}</span><button class="btn ghost" id="tmBtn" data-act="timer">⏱ Bắt đầu</button></div>` : "";
+  return `<div class="cardwrap">
+    <div class="who">${p.av} ${esc(p.name)}</div>
+    <article class="tcard type-${c.type}">
+      <div class="tbadge">${T.icon} ${T.name}</div><div class="tsub">${T.sub}</div>
+      <p class="ttext">${esc(c.t)}</p>${timer}
+    </article>
+    <div class="judge">
+      <button class="btn good" data-act="done">✅ Đã làm</button>
+      <button class="btn bad" data-act="stinky">🤢 Ăn kẹo thúi</button>
+    </div>
+    <button class="btn ghost" data-act="swap" ${left ? "" : "disabled"}>🔄 Đổi thẻ (còn ${left})</button>
+  </div>`;
+}
+const fmt = s => String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+function startTimer() {
+  const total = S.card.s, end = Date.now() + total * 1000, tm = $("#tm"), btn = $("#tmBtn");
+  clearInterval(tmr); btn.textContent = "↺ Đếm lại"; let lastL = -1;
+  tmr = setInterval(() => {
+    const l = Math.max(0, Math.ceil((end - Date.now()) / 1000));
+    tm.textContent = fmt(l); tm.classList.toggle("warn", l <= 5 && l > 0);
+    if (l !== lastL && l <= 3 && l > 0) sfx.beep();
+    lastL = l;
+    if (l <= 0) { clearInterval(tmr); sfx.alarm(); tm.textContent = "⏰ Hết giờ!"; tm.classList.remove("warn"); }
+  }, 200);
+}
+function swapCard() {
+  const p = cur(); if (lock || p.swap) return;
+  p.swap = true;
+  S.card = draw(Object.keys(TYPES)[rnd(3)], S.card.t); save();
+  sfx.flip(); clearInterval(tmr);
+  $("#app").innerHTML = viewCard();
+}
+function judge(kind) {
+  if (lock) return; lock = true; clearInterval(tmr);
+  const p = cur();
+  if (kind === "stinky") {
+    p.stinky++; sfx.ew(); shake(); overlay("🤢", `EWWW! +1 kẹo thúi cho ${p.name}`);
+  } else { sfx.cheer(); burst(); toast("Làm tốt lắm! 🎉"); }
+  S.card = null; S.current = null; S.phase = "spin"; save();
+  renderBoard();
+  setTimeout(() => { lock = false; render(); }, kind === "stinky" ? 1700 : 1000);
+}
+function sorted() { return [...S.players].sort((a, b) => b.stinky - a.stinky || a.name.localeCompare(b.name, "vi")); }
+function renderBoard() {
+  $("#board").innerHTML = `<h3><span>🤢 Bảng kẹo thúi</span><small class="small">Lượt ${S.turn}</small></h3>
+    <ol>${sorted().map((p, i) => `<li class="${p.id === S.current ? "active" : ""}"><span class="rk">${i + 1}</span><span class="av">${p.av}</span><span class="nm">${esc(p.name)}</span><span class="sc">🤢 ${p.stinky}</span></li>`).join("")}</ol>
+    <button class="btn ghost" data-act="reset" style="min-height:48px">🔁 Chơi lại từ đầu</button>`;
+}
+function viewSummary() {
+  const ps = sorted(), max = ps.length ? ps[0].stinky : 0;
+  const kings = max > 0 ? ps.filter(p => p.stinky === max) : [];
+  const clean = ps.filter(p => p.stinky === 0);
+  const names = l => l.map(p => `<span>${p.av} ${esc(p.name)}</span>`).join("");
+  return `<section class="panel sum">
+    <h1 class="logo">🏁 Tổng kết đêm Halloween</h1>
+    ${kings.length ? `<div class="award king"><h3>👑 Vua Kẹo Thúi</h3><div class="pl">${names(kings)}</div><div>${max} viên kẹo thúi 🤢</div></div>`
+      : `<div class="award king"><h3>👑 Vua Kẹo Thúi</h3><div>Chưa ai ăn kẹo thúi — cả nhóm quá đỉnh! 🎉</div></div>`}
+    <div class="award clean"><h3>😇 Không Tì Vết</h3>${clean.length ? `<div class="pl">${names(clean)}</div>` : `<div>Ai cũng đã nếm kẹo thúi rồi! 🤭</div>`}</div>
+    <h3 style="color:var(--orange2)">Bảng xếp hạng kẹo thúi</h3>
+    <ul class="rank">${ps.map((p, i) => `<li><span class="rk">${i + 1}</span><span style="font-size:1.6rem">${p.av}</span><span class="nm">${esc(p.name)}</span><b class="sc" style="color:var(--bad)">🤢 ${p.stinky}</b></li>`).join("")}</ul>
+    <div class="row"><button class="btn big" data-act="resume">▶ Chơi tiếp</button><button class="btn ghost" data-act="reset">🔁 Chơi lại từ đầu</button></div>
+  </section>`;
+}
+
+/* ================= MODAL ================= */
+function openModal(html) { const m = $("#modal"); m.innerHTML = `<div class="modal" role="dialog">${html}</div>`; m.hidden = false; }
+function closeModal() { $("#modal").hidden = true; pendingOk = null; }
+function confirmBox(msg, okLabel, cb) {
+  pendingOk = cb;
+  openModal(`<h2>Xác nhận</h2><p style="margin:0">${msg}</p><div class="row"><button class="btn ghost" data-act="closemodal">Huỷ</button><button class="btn danger" data-act="ok">${okLabel}</button></div>`);
+}
+function settingsHTML(sel) {
+  const lists = Object.keys(TYPES).map(t => C[t].map((x, i) => `<li><span>${TYPES[t].icon} ${esc(x)}</span><button class="iconbtn" data-act="delc" data-t="${t}" data-i="${i}" aria-label="Xoá thẻ">✕</button></li>`).join("")).join("");
+  return `<h2>⚙️ Cài đặt</h2>
+    <p class="small" style="margin:0">Thêm thẻ tự viết, thẻ sẽ được trộn chung với ${Object.values(CARDS).reduce((a, b) => a + b.length, 0)} thẻ có sẵn.</p>
+    <select class="field" id="cType">${Object.keys(TYPES).map(t => `<option value="${t}" ${t === sel ? "selected" : ""}>${TYPES[t].icon} ${TYPES[t].name} — ${TYPES[t].sub}</option>`).join("")}</select>
+    <input class="field" id="cText" maxlength="160" placeholder="Nội dung thẻ mới…" autocomplete="off">
+    <button class="btn big" data-act="addc" style="min-height:52px;font-size:1.1rem">➕ Thêm thẻ</button>
+    <ul class="clist">${lists || `<li class="small"><span>Chưa có thẻ tự viết nào.</span></li>`}</ul>
+    <div class="row"><button class="btn danger" data-act="reset">🔁 Chơi lại từ đầu</button><button class="btn ghost" data-act="closemodal">Đóng</button></div>`;
+}
+function openSettings(sel) { openModal(settingsHTML(sel)); }
+function resetGame() {
+  confirmBox("Xoá toàn bộ điểm kẹo thúi và bắt đầu lại từ đầu? Tên người chơi và thẻ tự viết vẫn được giữ.", "Xoá & chơi lại", () => {
+    const ps = S.players.map(p => Object.assign({}, p, { stinky: 0, swap: false }));
+    const snd = S.sound; S = fresh(ps); S.sound = snd; save(); closeModal(); render();
+  });
+}
+function openBoard() { $("#board").classList.add("open"); $("#scrim").hidden = false; }
+function closeBoard() { $("#board").classList.remove("open"); $("#scrim").hidden = true; }
+
+/* ================= SỰ KIỆN ================= */
+const ACT = {
+  board: () => $("#board").classList.contains("open") ? closeBoard() : openBoard(),
+  settings: () => openSettings(),
+  sound: () => { S.sound = !S.sound; save(); $("#btnSound").textContent = S.sound ? "🔊" : "🔇"; if (S.sound) sfx.beep(); },
+  fs: () => {
+    const d = document, e = d.documentElement;
+    if (d.fullscreenElement || d.webkitFullscreenElement) (d.exitFullscreen || d.webkitExitFullscreen).call(d);
+    else (e.requestFullscreen || e.webkitRequestFullscreen).call(e);
+  },
+  end: () => confirmBox("Kết thúc game và xem tổng kết?", "Kết thúc", () => { closeModal(); S.phase = "summary"; S.current = null; S.card = null; save(); render(); }),
+  addp: () => { if (S.players.length < MAX_P) { S.players.push(newPlayer(S.players.length)); save(); render(); } },
+  delp: el => { S.players = S.players.filter(p => p.id !== el.dataset.pid); save(); render(); },
+  avatar: el => {
+    avTarget = el.dataset.pid;
+    openModal(`<h2>Chọn avatar</h2><div class="avgrid">${AVATARS.map((a, i) => `<button data-act="setav" data-i="${i}">${a}</button>`).join("")}</div>`);
+  },
+  setav: el => { const p = S.players.find(x => x.id === avTarget); if (p) p.av = AVATARS[+el.dataset.i]; save(); closeModal(); render(); },
+  start: () => {
+    if (S.players.length < MIN_P) return toast(`Cần ít nhất ${MIN_P} người chơi nhé!`);
+    S.players.forEach((p, i) => { p.name = p.name.trim() || `Người chơi ${i + 1}`; p.stinky = 0; p.swap = false; });
+    S.used = { treat: [], trick: [], secret: [] }; S.turn = 0; S.last = null; S.streak = 0; A();
+    nextTurn();
+  },
+  pumpkin: el => pickPumpkin(el),
+  timer: startTimer,
+  swap: swapCard,
+  done: () => judge("done"),
+  stinky: () => judge("stinky"),
+  resume: () => nextTurn(),
+  reset: resetGame,
+  ok: () => { const f = pendingOk; pendingOk = null; if (f) f(); },
+  closemodal: closeModal,
+  addc: () => {
+    const t = $("#cType").value, v = $("#cText").value.trim();
+    if (!v) return toast("Hãy nhập nội dung thẻ.");
+    C[t].push(v); saveC(); openSettings(t);
+  },
+  delc: el => { C[el.dataset.t].splice(+el.dataset.i, 1); saveC(); openSettings(el.dataset.t); }
+};
+document.addEventListener("click", e => {
+  if (e.target.id === "modal") return closeModal();
+  const el = e.target.closest("[data-act]");
+  if (el && ACT[el.dataset.act]) ACT[el.dataset.act](el);
+});
+document.addEventListener("input", e => {
+  if (e.target.classList.contains("pname")) {
+    const p = S.players.find(x => x.id === e.target.dataset.pid); if (p) { p.name = e.target.value; save(); }
+  }
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Enter" && e.target.id === "cText") ACT.addc();
+  if (e.key === "Escape") { closeModal(); closeBoard(); }
+});
+["gesturestart", "dblclick"].forEach(ev => document.addEventListener(ev, e => e.preventDefault()));
+if (document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen) $("#btnFs").hidden = false;
+
+render();
+</script>
+</body>
+</html>
